@@ -50,6 +50,6 @@ class NginxTest {
 // Boilerplate
 def junit = new org.junit.runner.JUnitCore()
 junit.addListener(new org.junit.internal.TextListener(System.out))
-junit.run(NginxTest)
+def result = junit.run(NginxTest)
 
-System.exit(0)
+System.exit(result.wasSuccessful() ? 0 : 1)
