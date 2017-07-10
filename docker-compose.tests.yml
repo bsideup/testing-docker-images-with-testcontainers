@@ -1,0 +1,12 @@
+tests:
+  image: groovy
+  stop_signal: SIGKILL
+  working_dir: $PWD
+  user: root
+  volumes:
+    - $PWD:$PWD
+    - /var/run/docker.sock:/var/run/docker.sock
+    - ~/.groovy/grapes:/root/.groovy/grapes
+  environment:
+    JAVA_OPTS: -Dgroovy.grape.report.downloads=true
+  command: groovy testcontainers.groovy
