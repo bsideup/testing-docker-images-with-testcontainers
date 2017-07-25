@@ -1,7 +1,7 @@
-@Grab('org.testcontainers:testcontainers:1.4.1')
-@Grab('org.slf4j:slf4j-simple:1.7.25')
+@GrabResolver(name='jitpack', root='https://jitpack.io', m2Compatible='true')
+@Grab('com.github.testcontainers:testcontainers-groovy-script:1.4.2')
+@groovy.transform.BaseScript(TestcontainersScript)
 import org.testcontainers.containers.*
-import org.testcontainers.images.builder.*
 import org.junit.*
 
 @Grab('io.rest-assured:rest-assured:3.0.3')
@@ -10,44 +10,33 @@ import io.restassured.*
 import static io.restassured.RestAssured.*
 import static org.hamcrest.Matchers.*
 
-@groovy.transform.TypeChecked
-class NginxTest {
+@groovy.transform.Field
+@ClassRule
+static public GenericContainer nginx = new GenericContainer("nginx:1.9.4")
+    .withClasspathResourceMapping("default.conf", "/etc/nginx/conf.d/default.conf", BindMode.READ_ONLY)
+    .withExposedPorts(80)
 
-    @ClassRule
-    public static GenericContainer nginx = new GenericContainer(
-        // Ask Testcontainers to build an image for us
-        new ImageFromDockerfile()
-            .withFileFromClasspath("default.conf", "default.conf")
-            .withFileFromClasspath("Dockerfile", "Dockerfile")
-    ).withExposedPorts(80)
-
-    @Before
-    void setup() {
-        RestAssured.baseURI = "http://${nginx.containerIpAddress}:${nginx.firstMappedPort}"
-    }
-
-    @Test
-    void "check welcome message"() {
-        when()
-            .get("/")
-        .then()
-            .statusCode(200)
-            .body(containsString("Welcome to nginx!"))
-    }
-
-    @Test
-    void "check redirect"() {
-        given()
-            .redirects().follow(false)
-        .when()
-            .get("/en/blog")
-        .then()
-            .statusCode(301)
-            .header("Location", "http://en.example.com/blog")
-    }
+@BeforeClass
+static void setup() {
+    RestAssured.baseURI = "http://${nginx.containerIpAddress}:${nginx.firstMappedPort}"
 }
 
-// Boilerplate
-def junit = new org.junit.runner.JUnitCore()
-junit.addListener(new org.junit.internal.TextListener(System.out))
-System.exit(junit.run(NginxTest).wasSuccessful() ? 0 : 1)
+@Test
+void "check welcome message"() {
+    when()
+        .get("/")
+    .then()
+        .statusCode(200)
+        .body(containsString("Welcome to nginx!"))
+}
+
+@Test
+void "check redirect"() {
+    given()
+        .redirects().follow(false)
+    .when()
+        .get("/en/blog")
+    .then()
+        .statusCode(301)
+        .header("Location", "http://en.example.com/blog")
+}
