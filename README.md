@@ -4,7 +4,7 @@
 
 If you have Groovy on your machine:
 ```
-$ groovy testcontainers.groovy
+$ groovy test.groovy
 ```
 
 If you don't have Groovy on your machine:

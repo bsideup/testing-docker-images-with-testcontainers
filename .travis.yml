@@ -4,4 +4,4 @@ services:
   - docker
 
 install: true
-script: groovy -Dgroovy.grape.report.downloads=true testcontainers.groovy
+script: groovy -Dgroovy.grape.report.downloads=true test.groovy
