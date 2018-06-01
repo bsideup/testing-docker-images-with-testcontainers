@@ -1,5 +1,6 @@
 @GrabResolver(name='jitpack', root='https://jitpack.io', m2Compatible='true')
 @Grab('com.github.testcontainers:testcontainers-groovy-script:1.4.2')
+@Grab('org.testcontainers:testcontainers:1.7.3')
 @groovy.transform.BaseScript(TestcontainersScript)
 import org.testcontainers.containers.*
 import org.junit.*
@@ -11,13 +12,13 @@ import static io.restassured.RestAssured.*
 import static org.hamcrest.Matchers.*
 
 @groovy.transform.Field
-@ClassRule
-static public GenericContainer nginx = new GenericContainer("nginx:1.9.4")
+static GenericContainer nginx = new GenericContainer("nginx:1.9.4")
     .withClasspathResourceMapping("default.conf", "/etc/nginx/conf.d/default.conf", BindMode.READ_ONLY)
     .withExposedPorts(80)
 
 @BeforeClass
 static void setup() {
+    nginx.start();
     RestAssured.baseURI = "http://${nginx.containerIpAddress}:${nginx.firstMappedPort}"
 }
 
