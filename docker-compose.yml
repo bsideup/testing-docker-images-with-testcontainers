@@ -1,12 +1,12 @@
 tests:
-  image: groovy
+  image: groovy:2.5-alpine
   stop_signal: SIGKILL
   working_dir: $PWD
   user: root
   volumes:
     - $PWD:$PWD
     - /var/run/docker.sock:/var/run/docker.sock
-    - ~/.groovy/grapes:/root/.groovy/grapes
+    - ~/.groovy/grapes/:/home/groovy/.groovy/grapes/
   environment:
     JAVA_OPTS: -DDgroovy.grape.report.downloads=true
-  command: groovy test.groovy
+  command: sh -c 'echo "checks.disable=true" > /root/.testcontainers.properties && groovy test.groovy'
